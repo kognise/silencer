@@ -83,8 +83,7 @@ client.on('voiceStateUpdate', async (oldMember, newMember) => {
   if (newChannel) {
     const settings = await getSettings(newChannel.guild)
     if (settings.get('channelId') === newChannel.id && !(newMember.guild.voice && newMember.guild.voice.connection) && newChannel.joinable) {
-      const connection = await newChannel.join()
-      await connection.setSpeaking(0)
+      await newChannel.join()
       console.log('Joined silent channel')
     }
   }
