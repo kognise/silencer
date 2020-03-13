@@ -5,7 +5,7 @@ require('dotenv').config()
 
 const Discord = require('discord.js')
 const admin = require('firebase-admin')
-const client = new Discord.Client()
+const client = new Discord.Client({ partials: [] })
 
 const x = '❌'
 const spy = '🕵️'
@@ -83,7 +83,8 @@ client.on('voiceStateUpdate', async (oldMember, newMember) => {
   if (newChannel) {
     const settings = await getSettings(newChannel.guild)
     if (settings.get('channelId') === newChannel.id && !(newMember.guild.voice && newMember.guild.voice.connection) && newChannel.joinable) {
-      await newChannel.join()
+      const connection = await newChannel.join()
+      connection.play('join.mp3', { passes: 5 })
       console.log('Joined silent channel')
     }
   }
@@ -98,6 +99,7 @@ client.on('voiceStateUpdate', async (oldMember, newMember) => {
 
 const timeouts = {}
 client.on('guildMemberSpeaking', (member, speaking) => {
+  console.log('State update')
   if (speaking.bitfield && !timeouts[member.id]) {
     console.log('Setting timeout')
     timeouts[member.id] = setTimeout(() => {
