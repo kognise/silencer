@@ -4,6 +4,7 @@ ENV NODE_ENV production
 COPY package.json ./
 COPY package-lock.json ./
 RUN npm install
+RUN apt-get update
 RUN apt-get install -y ffmpeg
 
 COPY . .
