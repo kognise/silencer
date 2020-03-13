@@ -80,12 +80,17 @@ client.on('voiceStateUpdate', async (oldMember, newMember) => {
   const oldChannel = oldMember.channel
   const newChannel = newMember.channel
 
-  if (newChannel) {
+  if (!oldChannel && newChannel) {
     const settings = await getSettings(newChannel.guild)
-    if (settings.get('channelId') === newChannel.id && !(newMember.guild.voice && newMember.guild.voice.connection) && newChannel.joinable) {
-      const connection = await newChannel.join()
-      connection.play('join.mp3', { passes: 5 })
-      console.log('Joined silent channel')
+    if (settings.get('channelId') === newChannel.id) {
+      if (!(newMember.guild.voice && newMember.guild.voice.connection) && newChannel.joinable) {
+        const connection = await newChannel.join()
+        connection.play('join.mp3', { passes: 5 })
+        console.log('Joined silent channel')
+      } else if (newMember.guild.voice && newMember.guild.voice.connection) {
+        newMember.guild.voice.connection.play('join.mp3', { passes: 5 })
+        console.log('Played sound in channel', newMember.member.displayName)
+      }
     }
   }
 
